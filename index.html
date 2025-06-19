@@ -687,3 +687,76 @@
             if (!friendAdvice) {
                 alert('Te rog să îmi spui ce sfat ai da unui prieten!');
                 return;
+            }
+            
+            document.getElementById('friend-step').classList.add('hidden');
+            document.getElementById('brain-thanks-step').classList.remove('hidden');
+        }
+
+        function completeReframing() {
+            completeSession();
+        }
+
+        function completeSession() {
+            clearInterval(sessionTimer);
+            document.getElementById('session-screen').classList.add('hidden');
+            document.getElementById('completion-screen').classList.remove('hidden');
+        }
+
+        function resetSession() {
+            clearInterval(sessionTimer);
+            clearTimeout(breathingTimer);
+            
+            currentSeconds = totalSeconds;
+            breathingCycle = 0;
+            breathingPhase = 'ready';
+            groundingStep = 0;
+            groundingItems = [];
+            reframingStep = 0;
+            currentThoughtStep = 0;
+            
+            document.getElementById('timer').textContent = '5:00';
+            document.getElementById('progress').style.width = '0%';
+            document.getElementById('breathing-btn').style.display = 'block';
+            document.getElementById('breathing-circle').className = 'breathing-circle';
+            document.getElementById('breathing-circle').textContent = '🫁';
+            document.getElementById('breathing-instruction').textContent = 'Apasă să înveți respirația de ninja!';
+            document.getElementById('grounding-list').innerHTML = '';
+            document.getElementById('grounding-input').value = '';
+            document.getElementById('grounding-next').style.display = 'none';
+            document.getElementById('situation-input').value = '';
+            document.getElementById('situation-input').disabled = false;
+            document.getElementById('thought-input').value = '';
+            document.getElementById('friend-input').value = '';
+            document.getElementById('thoughts-list').innerHTML = '';
+            document.getElementById('thoughts-display').style.display = 'none';
+            document.getElementById('start-btn').style.display = 'none';
+            
+            // Reset reframing visibility
+            document.getElementById('reframing-steps').classList.add('hidden');
+            document.getElementById('thoughts-step').classList.add('hidden');
+            document.getElementById('friend-step').classList.add('hidden');
+            document.getElementById('brain-thanks-step').classList.add('hidden');
+            document.querySelector('#reframing-phase .btn').style.display = 'block';
+            
+            // Reset feeling selections
+            document.querySelectorAll('.feeling-face').forEach(face => {
+                face.classList.remove('selected-face');
+            });
+            
+            showWelcome();
+        }
+
+        // Allow Enter key to add grounding items or advance reframing
+        document.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                if (!document.getElementById('grounding-phase').classList.contains('hidden')) {
+                    addGroundingItem();
+                } else if (!document.getElementById('thoughts-step').classList.contains('hidden')) {
+                    nextThoughtStep();
+                }
+            }
+        });
+    </script>
+</body>
+</html>
