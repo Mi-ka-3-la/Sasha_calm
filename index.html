@@ -1,0 +1,689 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aplicația Super de Calm pentru Sasha</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Comic Sans MS', 'Arial', sans-serif;
+            background: linear-gradient(135deg, #4caf50 0%, #8bc34a 50%, #cddc39 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #333;
+        }
+
+        .app-container {
+            background: white;
+            border-radius: 25px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+            padding: 30px;
+            max-width: 450px;
+            width: 90%;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+            border: 3px solid #4caf50;
+        }
+
+        .app-container::before {
+            content: '🌟⚡🎮⚡🌟';
+            position: absolute;
+            top: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 16px;
+        }
+
+        h1 {
+            color: #2e7d32;
+            margin-bottom: 10px;
+            font-size: 24px;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
+        }
+
+        .subtitle {
+            color: #666;
+            margin-bottom: 25px;
+            font-size: 16px;
+        }
+
+        .timer-display {
+            font-size: 42px;
+            font-weight: bold;
+            color: #4caf50;
+            margin: 25px 0;
+            font-family: 'Arial Black', sans-serif;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .breathing-circle {
+            width: 140px;
+            height: 140px;
+            border: 4px solid #4caf50;
+            border-radius: 50%;
+            margin: 20px auto;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            font-weight: bold;
+            color: #4caf50;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .breathing-circle::after {
+            content: '';
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(76, 175, 80, 0.1) 0%, transparent 70%);
+        }
+
+        .breathing-circle.inhale {
+            transform: scale(1.3);
+            background: rgba(76, 175, 80, 0.2);
+            border-color: #66bb6a;
+            color: #66bb6a;
+        }
+
+        .breathing-circle.hold {
+            transform: scale(1.2);
+            background: rgba(255, 193, 7, 0.2);
+            border-color: #ff9800;
+            color: #ff9800;
+        }
+
+        .breathing-circle.exhale {
+            transform: scale(0.9);
+            background: rgba(46, 125, 50, 0.2);
+            border-color: #2e7d32;
+            color: #2e7d32;
+        }
+
+        .instruction {
+            font-size: 18px;
+            margin: 20px 0;
+            min-height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #333;
+            line-height: 1.4;
+            font-weight: 600;
+        }
+
+        .step-counter {
+            background: linear-gradient(45deg, #4caf50, #2e7d32);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 14px;
+            margin-bottom: 20px;
+            display: inline-block;
+            font-weight: bold;
+        }
+
+        .btn {
+            background: linear-gradient(45deg, #4caf50, #2e7d32);
+            color: white;
+            border: none;
+            padding: 15px 25px;
+            border-radius: 15px;
+            font-size: 16px;
+            cursor: pointer;
+            margin: 10px;
+            transition: all 0.3s ease;
+            font-weight: bold;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.3);
+        }
+
+        .btn:disabled {
+            background: #bdc3c7;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .btn-secondary {
+            background: linear-gradient(45deg, #95a5a6, #7f8c8d);
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 10px;
+            background: #f0f0f0;
+            border-radius: 5px;
+            margin: 20px 0;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #4caf50, #2e7d32);
+            border-radius: 5px;
+            transition: width 0.3s ease;
+        }
+
+        .kid-input {
+            margin: 15px 0;
+            padding: 15px;
+            border: 3px solid #4caf50;
+            border-radius: 15px;
+            font-size: 16px;
+            width: 100%;
+            transition: border-color 0.3s ease;
+            font-family: 'Comic Sans MS', sans-serif;
+        }
+
+        .kid-input:focus {
+            outline: none;
+            border-color: #2e7d32;
+            box-shadow: 0 0 10px rgba(76, 175, 80, 0.3);
+        }
+
+        .sense-list {
+            text-align: left;
+            margin: 20px 0;
+        }
+
+        .sense-item {
+            padding: 10px;
+            margin: 8px 0;
+            border-bottom: 2px solid #f0f0f0;
+            color: #333;
+            background: #f8f9fa;
+            border-radius: 8px;
+            font-weight: 600;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .completion-message {
+            background: linear-gradient(135deg, #4caf50, #2e7d32);
+            color: white;
+            padding: 20px;
+            border-radius: 15px;
+            margin: 20px 0;
+            font-weight: bold;
+        }
+
+        .breathing-count {
+            font-size: 20px;
+            color: #4caf50;
+            font-weight: bold;
+            margin: 15px 0;
+        }
+
+        .emoji-large {
+            font-size: 48px;
+            margin: 20px 0;
+        }
+
+        .feeling-face {
+            font-size: 64px;
+            margin: 20px 0;
+            cursor: pointer;
+            transition: transform 0.3s ease;
+        }
+
+        .feeling-face:hover {
+            transform: scale(1.1);
+        }
+
+        .feeling-faces {
+            display: flex;
+            justify-content: space-around;
+            margin: 20px 0;
+        }
+
+        .selected-face {
+            transform: scale(1.2);
+            filter: drop-shadow(0 0 10px rgba(76, 175, 80, 0.8));
+        }
+
+        .magic-stars {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            font-size: 20px;
+            animation: twinkle 2s infinite;
+        }
+
+        @keyframes twinkle {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.3; }
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <div class="magic-stars">⚡🌟⚡</div>
+
+        <!-- Welcome Screen -->
+        <div id="welcome-screen">
+            <h1>🌟 Aplicația Super de Calm 🌟</h1>
+            <p class="subtitle">Pentru Sasha - campionul la calm!</p>
+            
+            <div class="emoji-large">🦸‍♂️⚡🎮</div>
+            
+            <div class="instruction">
+                Salut, Sasha! 👋<br>
+                Când te simți supărat sau nervos, această aplicație super te va ajuta să devii din nou calm ca un ninja!<br>
+                Durează doar 5 minute! 🕐
+            </div>
+            
+            <div class="feeling-faces">
+                <div class="feeling-face" onclick="selectFeeling(this, '😠')">😠</div>
+                <div class="feeling-face" onclick="selectFeeling(this, '😤')">😤</div>
+                <div class="feeling-face" onclick="selectFeeling(this, '😢')">😢</div>
+                <div class="feeling-face" onclick="selectFeeling(this, '😰')">😰</div>
+            </div>
+            <div style="font-size: 14px; color: #666; margin-bottom: 20px;">
+                Apasă pe fața care arată cum te simți acum
+            </div>
+            
+            <button class="btn" onclick="startSession()" id="start-btn" style="display: none;">
+                ⚡ Să începem misiunea de calm! ⚡
+            </button>
+            <button class="btn btn-secondary" onclick="showInfo()">❓ Cum funcționează?</button>
+        </div>
+
+        <!-- Info Screen -->
+        <div id="info-screen" class="hidden">
+            <h1>⚡ Cum funcționează super puterea? ⚡</h1>
+            <div class="instruction" style="text-align: left; font-size: 16px;">
+                <strong>Pasul 1:</strong> 🫁 Respirația de Ninja (1 minut)<br>
+                • Inspiră ca un dragon verde - 4 secunde<br>
+                • Ține aerul ca o broască țestoasă - 2 secunde<br>
+                • Scoate aerul ca un vulcan - 7 secunde<br><br>
+                
+                <strong>Pasul 2:</strong> 👀 Jocul detectivului (2 minute)<br>
+                • Privește în jurul tău și găsește lucruri<br>
+                • Folosește toate super puterile tale<br><br>
+
+                <strong>Pasul 3:</strong> 🧠 Transformă gândurile (2 minute)<br>
+                • Schimbă gândurile supărătoare în gânduri de campion<br>
+                • Mulțumește creierului tău super<br>
+            </div>
+            <button class="btn" onclick="showWelcome()">🔙 Înapoi</button>
+        </div>
+
+        <!-- Main Session -->
+        <div id="session-screen" class="hidden">
+            <div class="step-counter" id="step-counter">Pasul 1 din 3: Respirația de Ninja</div>
+            
+            <div class="timer-display" id="timer">5:00</div>
+            
+            <div class="progress-bar">
+                <div class="progress-fill" id="progress" style="width: 0%"></div>
+            </div>
+
+            <!-- Breathing Phase -->
+            <div id="breathing-phase">
+                <div class="breathing-circle" id="breathing-circle">🫁</div>
+                <div class="breathing-count" id="breathing-count">Respirația 1 din 5</div>
+                <div class="instruction" id="breathing-instruction">Apasă să înveți respirația de ninja!</div>
+                <button class="btn" id="breathing-btn" onclick="startBreathing()">⚡ Începe respirația de ninja! ⚡</button>
+            </div>
+
+            <!-- Grounding Phase -->
+            <div id="grounding-phase" class="hidden">
+                <div class="instruction" id="grounding-instruction">Găsește 5 lucruri pe care le poți vedea în jurul tău! 👀</div>
+                <input type="text" class="kid-input" id="grounding-input" placeholder="Ce vezi? (ex: o carte albastră)">
+                <button class="btn" onclick="addGroundingItem()">➕ Adaugă</button>
+                <div class="sense-list" id="grounding-list"></div>
+                <button class="btn" id="grounding-next" onclick="nextGroundingStep()" style="display: none;">⚡ Următorul pas! ⚡</button>
+            </div>
+
+            <!-- Reframing Phase -->
+            <div id="reframing-phase" class="hidden">
+                <div class="instruction" id="reframing-instruction">Ce te supără astăzi, Sasha? 🤔</div>
+                <textarea class="kid-input" id="situation-input" placeholder="Spune-mi ce te face supărat..." rows="3" style="resize: vertical;"></textarea>
+                <button class="btn" onclick="startReframing()">⚡ Continuă ⚡</button>
+                
+                <div id="reframing-steps" class="hidden">
+                    <div id="thoughts-step" class="hidden">
+                        <div class="instruction">Să transformăm gândurile tale! Completează:</div>
+                        <div style="margin: 20px 0; font-size: 18px; color: #4caf50;">
+                            <strong id="thought-prompt">"Mă gândesc că..."</strong>
+                        </div>
+                        <input type="text" class="kid-input" id="thought-input" placeholder="Completează gândul...">
+                        <button class="btn" onclick="nextThoughtStep()">⚡ Următorul gând ⚡</button>
+                        <div id="thoughts-display" style="margin-top: 20px; padding: 15px; background: #f8f9fa; border-radius: 15px; text-align: left; display: none;">
+                            <div style="color: #4caf50; font-weight: bold; margin-bottom: 10px;">🌈 Gândurile tale noi:</div>
+                            <div id="thoughts-list"></div>
+                        </div>
+                    </div>
+
+                    <div id="friend-step" class="hidden">
+                        <div class="instruction">Ce ai spune unui prieten bun care se simte la fel? 🤗</div>
+                        <textarea class="kid-input" id="friend-input" placeholder="Ce sfat frumos ai da unui prieten?" rows="3" style="resize: vertical;"></textarea>
+                        <button class="btn" onclick="showBrainThanks()">⚡ Continuă ⚡</button>
+                    </div>
+
+                    <div id="brain-thanks-step" class="hidden">
+                        <div class="instruction">Să îi mulțumim creierului tău pentru că te protejează! 🧠💕</div>
+                        <div style="margin: 20px 0; padding: 20px; background: linear-gradient(135deg, #4caf50, #2e7d32); color: white; border-radius: 15px;">
+                            <div style="font-size: 24px; margin-bottom: 10px;">🧠⚡</div>
+                            <strong>"Mulțumesc, creierule, că mă protejezi! Știu că vrei să fiu în siguranță și sunt pregătit să mă descurc ca un adevărat campion!" 💪</strong>
+                        </div>
+                        <div class="instruction" style="font-size: 16px;">Spune asta cu voce tare sau în gând!</div>
+                        <button class="btn" onclick="completeReframing()">⚡ Sunt gata să merg mai departe! ⚡</button>
+                    </div>
+                </div>
+            </div>
+
+            <button class="btn btn-secondary" onclick="resetSession()">🔄 Restart</button>
+        </div>
+
+        <!-- Completion Screen -->
+        <div id="completion-screen" class="hidden">
+            <h1>🎉 Bravo, Sasha! 🎉</h1>
+            <div class="emoji-large">🌟🏆⚡</div>
+            <div class="completion-message">
+                Ești un adevărat super-erou al calmului!<br>
+                Ai învățat să îți controlezi emoțiile ca un ninja adevărat! 🥷
+            </div>
+            <div class="instruction">
+                Acum observă cum te simți...<br>
+                Ești mai calm? 😌⚡
+            </div>
+            <div class="feeling-faces">
+                <div class="feeling-face" onclick="selectEndFeeling(this, '😌')">😌</div>
+                <div class="feeling-face" onclick="selectEndFeeling(this, '😊')">😊</div>
+                <div class="feeling-face" onclick="selectEndFeeling(this, '😇')">😇</div>
+                <div class="feeling-face" onclick="selectEndFeeling(this, '🥰')">🥰</div>
+            </div>
+            <div style="font-size: 14px; color: white; margin-bottom: 20px;">
+                Cum te simți acum?
+            </div>
+            <button class="btn" onclick="resetSession()">⚡ Nouă misiune de calm! ⚡</button>
+        </div>
+    </div>
+
+    <script>
+        let sessionTimer;
+        let breathingTimer;
+        let totalSeconds = 300; // 5 minutes
+        let currentSeconds = totalSeconds;
+        let breathingCycle = 0;
+        let breathingPhase = 'ready'; // ready, inhale, hold, exhale
+        let groundingStep = 0;
+        let groundingItems = [];
+        let reframingStep = 0;
+        let thoughtPrompts = [
+            "Mă gândesc că...",
+            "Creierul meu îmi spune că...",
+            "Observ că mă gândesc că..."
+        ];
+        let currentThoughtStep = 0;
+        let groundingPrompts = [
+            "Găsește 5 lucruri pe care le poți vedea în jurul tău! 👀",
+            "Găsește 4 lucruri pe care le poți atinge! ✋", 
+            "Găsește 3 lucruri pe care le poți auzi! 👂",
+            "Găsește 2 lucruri pe care le poți mirosi! 👃",
+            "Găsește 1 lucru pe care îl poți gusta! 👅"
+        ];
+
+        function selectFeeling(element, emoji) {
+            // Remove selection from all faces
+            document.querySelectorAll('.feeling-face').forEach(face => {
+                face.classList.remove('selected-face');
+            });
+            
+            // Add selection to clicked face
+            element.classList.add('selected-face');
+            
+            // Show start button
+            document.getElementById('start-btn').style.display = 'block';
+        }
+
+        function selectEndFeeling(element, emoji) {
+            // Visual feedback
+            element.style.transform = 'scale(1.3)';
+            setTimeout(() => {
+                element.style.transform = 'scale(1.0)';
+            }, 200);
+        }
+
+        function showWelcome() {
+            document.getElementById('welcome-screen').classList.remove('hidden');
+            document.getElementById('info-screen').classList.add('hidden');
+            document.getElementById('session-screen').classList.add('hidden');
+            document.getElementById('completion-screen').classList.add('hidden');
+        }
+
+        function showInfo() {
+            document.getElementById('welcome-screen').classList.add('hidden');
+            document.getElementById('info-screen').classList.remove('hidden');
+        }
+
+        function startSession() {
+            document.getElementById('welcome-screen').classList.add('hidden');
+            document.getElementById('session-screen').classList.remove('hidden');
+            
+            // Start main timer
+            sessionTimer = setInterval(updateTimer, 1000);
+        }
+
+        function updateTimer() {
+            currentSeconds--;
+            
+            const minutes = Math.floor(currentSeconds / 60);
+            const seconds = currentSeconds % 60;
+            document.getElementById('timer').textContent = 
+                `${minutes}:${seconds.toString().padStart(2, '0')}`;
+            
+            const progress = ((totalSeconds - currentSeconds) / totalSeconds) * 100;
+            document.getElementById('progress').style.width = progress + '%';
+            
+            // Switch to grounding phase at 4 minutes remaining
+            if (currentSeconds === 240 && document.getElementById('breathing-phase').style.display !== 'none') {
+                switchToGrounding();
+            }
+            
+            // Switch to reframing phase at 2 minutes remaining  
+            if (currentSeconds === 120 && !document.getElementById('grounding-phase').classList.contains('hidden')) {
+                switchToReframing();
+            }
+            
+            if (currentSeconds <= 0) {
+                completeSession();
+            }
+        }
+
+        function startBreathing() {
+            document.getElementById('breathing-btn').style.display = 'none';
+            breathingCycle = 1;
+            updateBreathingCount();
+            nextBreathingPhase();
+        }
+
+        function nextBreathingPhase() {
+            const circle = document.getElementById('breathing-circle');
+            const instruction = document.getElementById('breathing-instruction');
+            
+            switch(breathingPhase) {
+                case 'ready':
+                    breathingPhase = 'inhale';
+                    circle.className = 'breathing-circle inhale';
+                    circle.textContent = '🐲 Inspiră';
+                    instruction.textContent = '🐲 INSPIRĂ: Ca un dragon verde puternic - 4 secunde!';
+                    setTimeout(nextBreathingPhase, 4000);
+                    break;
+                    
+                case 'inhale':
+                    breathingPhase = 'hold';
+                    circle.className = 'breathing-circle hold';
+                    circle.textContent = '🐢 Ține';
+                    instruction.textContent = '🐢 ȚINE: Ca o broască țestoasă înțeleaptă - 2 secunde!';
+                    setTimeout(nextBreathingPhase, 2000);
+                    break;
+                    
+                case 'hold':
+                    breathingPhase = 'exhale';
+                    circle.className = 'breathing-circle exhale';
+                    circle.textContent = '🌋 Expiră';
+                    instruction.textContent = '🌋 EXPIRĂ: Ca un vulcan puternic - 7 secunde!';
+                    setTimeout(nextBreathingPhase, 7000);
+                    break;
+                    
+                case 'exhale':
+                    breathingCycle++;
+                    if (breathingCycle <= 5 && currentSeconds > 240) {
+                        breathingPhase = 'inhale';
+                        updateBreathingCount();
+                        circle.className = 'breathing-circle';
+                        circle.textContent = '⚡';
+                        instruction.textContent = 'Super! Să facem încă o respirație de ninja! ⚡';
+                        setTimeout(nextBreathingPhase, 1500);
+                    } else {
+                        circle.className = 'breathing-circle';
+                        circle.textContent = '🏆';
+                        instruction.textContent = 'Excelent! Respirația de ninja este completă! Te simți mai calm? 😌';
+                    }
+                    break;
+            }
+        }
+
+        function updateBreathingCount() {
+            document.getElementById('breathing-count').textContent = `Respirația ${breathingCycle} din 5`;
+        }
+
+        function switchToGrounding() {
+            document.getElementById('step-counter').textContent = 'Pasul 2 din 3: Jocul detectivului';
+            document.getElementById('breathing-phase').classList.add('hidden');
+            document.getElementById('grounding-phase').classList.remove('hidden');
+            
+            groundingStep = 0;
+            groundingItems = [];
+            updateGroundingPrompt();
+        }
+
+        function updateGroundingPrompt() {
+            if (groundingStep < groundingPrompts.length) {
+                document.getElementById('grounding-instruction').textContent = groundingPrompts[groundingStep];
+                document.getElementById('grounding-input').placeholder = 'Scrie ce găsești...';
+                document.getElementById('grounding-input').value = '';
+                document.getElementById('grounding-input').focus();
+            }
+        }
+
+        function addGroundingItem() {
+            const input = document.getElementById('grounding-input');
+            const value = input.value.trim();
+            
+            if (value) {
+                groundingItems.push(value);
+                const list = document.getElementById('grounding-list');
+                const item = document.createElement('div');
+                item.className = 'sense-item';
+                item.textContent = `${groundingItems.length}. ${value}`;
+                list.appendChild(item);
+                
+                input.value = '';
+                
+                // Show next button when we have the right number of items
+                const expectedCount = 5 - groundingStep;
+                if (groundingItems.length >= expectedCount) {
+                    document.getElementById('grounding-next').style.display = 'block';
+                }
+            }
+        }
+
+        function nextGroundingStep() {
+            groundingStep++;
+            groundingItems = [];
+            document.getElementById('grounding-list').innerHTML = '';
+            document.getElementById('grounding-next').style.display = 'none';
+            
+            if (groundingStep < groundingPrompts.length) {
+                updateGroundingPrompt();
+            } else {
+                // Wait for timer to switch to reframing or complete
+                document.getElementById('grounding-instruction').textContent = 'Bravo! Jocul cu simțurile este complet! 🌟';
+            }
+        }
+
+        function switchToReframing() {
+            document.getElementById('step-counter').textContent = 'Pasul 3 din 3: Schimbă gândurile';
+            document.getElementById('grounding-phase').classList.add('hidden');
+            document.getElementById('reframing-phase').classList.remove('hidden');
+        }
+
+        function startReframing() {
+            const situation = document.getElementById('situation-input').value.trim();
+            if (!situation) {
+                alert('Te rog să îmi spui mai întâi ce te supără!');
+                return;
+            }
+            
+            document.getElementById('reframing-steps').classList.remove('hidden');
+            document.getElementById('thoughts-step').classList.remove('hidden');
+            document.querySelector('#reframing-phase .btn').style.display = 'none';
+            document.getElementById('situation-input').disabled = true;
+            
+            updateThoughtPrompt();
+        }
+
+        function updateThoughtPrompt() {
+            document.getElementById('thought-prompt').textContent = `"${thoughtPrompts[currentThoughtStep]}"`;
+            document.getElementById('thought-input').placeholder = 'Completează propoziția...';
+            document.getElementById('thought-input').value = '';
+            document.getElementById('thought-input').focus();
+        }
+
+        function nextThoughtStep() {
+            const input = document.getElementById('thought-input').value.trim();
+            if (!input) {
+                alert('Te rog să completezi propoziția mai întâi!');
+                return;
+            }
+            
+            // Add to display
+            const displayDiv = document.getElementById('thoughts-display');
+            const listDiv = document.getElementById('thoughts-list');
+            
+            const reframedText = document.createElement('div');
+            reframedText.style.marginBottom = '8px';
+            reframedText.style.padding = '8px';
+            reframedText.style.background = 'white';
+            reframedText.style.borderRadius = '8px';
+            reframedText.innerHTML = `<strong>"${thoughtPrompts[currentThoughtStep]}"</strong> ${input}`;
+            listDiv.appendChild(reframedText);
+            
+            displayDiv.style.display = 'block';
+            
+            currentThoughtStep++;
+            
+            if (currentThoughtStep < thoughtPrompts.length) {
+                updateThoughtPrompt();
+            } else {
+                // Move to friend step
+                document.getElementById('thoughts-step').classList.add('hidden');
+                document.getElementById('friend-step').classList.remove('hidden');
+            }
+        }
+
+        function showBrainThanks() {
+            const friendAdvice = document.getElementById('friend-input').value.trim();
+            if (!friendAdvice) {
+                alert('Te rog să îmi spui ce sfat ai da unui prieten!');
+                return;
